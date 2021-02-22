@@ -1,21 +1,28 @@
-import re
+def run(data):
+    index = 0
+    while data[index] != 99:
+        value1 = data[data[index + 1]]
+        value2 = data[data[index + 2]]
+        address = data[index + 3]
+        if data[index] == 1:
+            data[address] = value1 + value2
+        elif data[index] == 2:
+            data[address] = value1 * value2
+        index += 4
+    return data[0]
 
-vals = []
-regex = r'(\d+)\-(\d+) (\w): (\w+)'
 with open('02.txt', 'r') as file:
-    for line in file:
-        line = line.strip()
-        min = int(re.sub(regex, r'\1', line))
-        max = int(re.sub(regex, r'\2', line))
-        letter = re.sub(regex, r'\3', line)
-        password = re.sub(regex, r'\4', line)
-        ''' Part 1
-        lr = re.compile(letter)
-        occs = len(lr.findall(password))
-        if occs >= min and occs <= max:
-            vals.append(line)
-        '''
-        if (password[min - 1] == letter and password[max - 1] != letter) or (password[min - 1] != letter and password[max - 1] == letter):
-            vals.append(line)
+    data = [int(d) for d in file.read().split(',')]
 
-print(len(vals))
+# Part 1
+print(run([data[0], 12, 2, *data[3:]]))
+
+# Part 2
+for noun in range(100):
+    for verb in range(100):
+        if run([data[0], noun, verb, *data[3:]]) == 19690720:
+            print(100 * noun + verb)
+            break
+    else:
+        continue
+    break

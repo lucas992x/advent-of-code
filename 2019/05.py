@@ -1,30 +1,73 @@
+def run(data, input):
+    index = 0
+    outputs = []
+    while data[index] != 99:
+        instruction = str(data[index])
+        while len(instruction) < 5:
+            instruction = '0' + instruction
+        opcode = int(instruction[-2:])
+        parameters = instruction[:-2]
+        # take input and store it (always in position mode)
+        if opcode == 3:
+            data[data[index + 1]] = input
+            index += 2
+        # output something
+        elif opcode == 4:
+            if parameters[2] == '0':
+                value1 = data[data[index + 1]]
+            else:
+                value1 = data[index + 1]
+            outputs.append(value1)
+            index += 2
+        else:
+            # first value
+            if parameters[2] == '0':
+                value1 = data[data[index + 1]]
+            else:
+                value1 = data[index + 1]
+            # second value
+            if parameters[1] == '0':
+                value2 = data[data[index + 2]]
+            else:
+                value2 = data[index + 2]
+            # address (always in position mode)
+            address = data[index + 3]
+            # write new value
+            if opcode == 1:
+                data[address] = value1 + value2
+                index += 4
+            elif opcode == 2:
+                data[address] = value1 * value2
+                index += 4
+            elif opcode == 5:
+                if value1:
+                    index = value2
+                else:
+                    index += 3
+            elif opcode == 6:
+                if not value1:
+                    index = value2
+                else:
+                    index += 3
+            elif opcode == 7:
+                if value1 < value2:
+                    data[address] = 1
+                else:
+                    data[address] = 0
+                index += 4
+            elif opcode == 8:
+                if value1 == value2:
+                    data[address] = 1
+                else:
+                    data[address] = 0
+                index += 4
+    return outputs
+
 with open('05.txt', 'r') as file:
-    data = file.read().splitlines()
+    data = [int(d) for d in file.read().split(',')]
+
 # Part 1
-ids = []
-seats = []
-for seat in data:
-    rows = [*range(128)]
-    cols = [*range(8)]
-    for ch in seat[:7]:
-        split = len(rows) // 2
-        if ch == 'F':
-            rows = rows[:split]
-        else:
-            rows = rows[split:]
-    for ch in seat[7:]:
-        split = len(cols) // 2
-        if ch == 'L':
-            cols = cols[:split]
-        else:
-            cols = cols[split:]
-    seats.append([rows[0], cols[0]])
-    ids.append(rows[0] * 8 + cols[0])
-print(max(ids))
+print(run(data[:], 1))
+
 # Part 2
-for r in range(128):
-    for c in range(8):
-        if [r, c] not in seats:
-            id = r * 8 + c
-            if id - 1 in ids and id + 1 in ids:
-                print(id)
+print(run(data[:], 5))
