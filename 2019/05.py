@@ -1,3 +1,10 @@
+def get_value(data, mode, index):
+    if mode == '0':
+        value = data[data[index]]
+    elif mode == '1':
+        value = data[index]
+    return value
+
 def run(data, input):
     index = 0
     outputs = []
@@ -13,23 +20,14 @@ def run(data, input):
             index += 2
         # output something
         elif opcode == 4:
-            if parameters[2] == '0':
-                value1 = data[data[index + 1]]
-            else:
-                value1 = data[index + 1]
+            value1 = get_value(data, parameters[2], index + 1)
             outputs.append(value1)
             index += 2
         else:
             # first value
-            if parameters[2] == '0':
-                value1 = data[data[index + 1]]
-            else:
-                value1 = data[index + 1]
+            value1 = get_value(data, parameters[2], index + 1)
             # second value
-            if parameters[1] == '0':
-                value2 = data[data[index + 2]]
-            else:
-                value2 = data[index + 2]
+            value2 = get_value(data, parameters[1], index + 2)
             # address (always in position mode)
             address = data[index + 3]
             # write new value
